@@ -5,5 +5,4 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(simple_mcl src/main.cpp)
-
 target_include_directories(simple_mcl PRIVATE include)

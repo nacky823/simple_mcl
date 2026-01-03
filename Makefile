@@ -1,19 +1,24 @@
-CXX := g++
-CXXFLAGS := -std=c++17 -O2 -Wall -Wextra -Iinclude
+# Makefile (CMake wrapper)
+BUILD_DIR := build
+TARGET := simple_mcl
 
-BIN := simple_mcl
-SRCS := src/main.cpp
-OBJS := $(SRCS:.cpp=.o)
+.PHONY: all configure build run clean distclean rebuild
 
-all: $(BIN)
+all: build
 
-$(BIN): $(OBJS)
-	$(CXX) $(CXXFLAGS) $^ -o $@
+configure:
+	@cmake -S . -B $(BUILD_DIR)
 
-%.o: %.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+build: configure
+	@cmake --build $(BUILD_DIR) -j
+
+run: build
+	@./$(BUILD_DIR)/$(TARGET)
 
 clean:
-	rm -f $(BIN) $(OBJS)
+	@cmake --build $(BUILD_DIR) --target clean 2>/dev/null || true
 
-.PHONY: all clean
+distclean:
+	@rm -rf $(BUILD_DIR)
+
+rebuild: distclean build
