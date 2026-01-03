@@ -27,4 +27,19 @@ inline std::vector<Particle> initializeUniformParticles(
     return particles;
 }
 
+inline void normalizeWeights(std::vector<Particle> *particles)
+{
+    if (!particles) return;
+
+    double sum = 0.0;
+    for (const auto &p : *particles) {
+        sum += p.weight;
+    }
+    if (sum <= 0.0) return;
+
+    for (auto &p : *particles) {
+        p.weight /= sum;
+    }
+}
+
 }  // namespace simple_mcl
