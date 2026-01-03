@@ -1,0 +1,16 @@
+# CMake build directory
+/build/
+
+# CMake cache and generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+
+# Compiled binaries and objects
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+simple_mcl
