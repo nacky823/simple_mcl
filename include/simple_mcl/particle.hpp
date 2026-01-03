@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cmath>
 #include <vector>
 
 #include "simple_mcl/random.hpp"
@@ -40,6 +41,31 @@ inline void normalizeWeights(std::vector<Particle> *particles)
     for (auto &p : *particles) {
         p.weight /= sum;
     }
+}
+
+inline Pose estimatePoseWeightedMean(const std::vector<Particle> &particles)
+{
+    Pose estimate;
+    if (particles.empty()) return estimate;
+
+    double sum_w = 0.0;
+    double sum_x = 0.0;
+    double sum_y = 0.0;
+    double sum_sin = 0.0;
+    double sum_cos = 0.0;
+    for (const auto &p : particles) {
+        sum_w += p.weight;
+        sum_x += p.weight * p.pose.x;
+        sum_y += p.weight * p.pose.y;
+        sum_sin += p.weight * std::sin(p.pose.theta);
+        sum_cos += p.weight * std::cos(p.pose.theta);
+    }
+    if (sum_w <= 0.0) return estimate;
+
+    estimate.x = sum_x / sum_w;
+    estimate.y = sum_y / sum_w;
+    estimate.theta = std::atan2(sum_sin, sum_cos);
+    return estimate;
 }
 
 }  // namespace simple_mcl

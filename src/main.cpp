@@ -43,5 +43,8 @@ int main() {
         std::cout << "p0=(" << p0.pose.x << ", " << p0.pose.y << ", " << p0.pose.theta << ")\n";
     }
 
+    simple_mcl::Pose estimate = simple_mcl::estimatePoseWeightedMean(particles);
+    std::cout << "estimate=(" << estimate.x << ", " << estimate.y << ", " << estimate.theta << ")\n";
+
     return 0;
 }
