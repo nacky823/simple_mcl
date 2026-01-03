@@ -28,6 +28,11 @@ int main() {
     std::vector<simple_mcl::Particle> particles =
         simple_mcl::initializeUniformParticles(5, min_pose, max_pose, rng);
 
+    for (auto &p : particles) {
+        p.weight = rng.uniform(0.0, 1.0);
+    }
+    simple_mcl::normalizeWeights(&particles);
+
     double wsum = 0.0;
     for (const auto &p : particles) {
         wsum += p.weight;
