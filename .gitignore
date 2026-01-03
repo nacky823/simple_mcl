@@ -13,4 +13,3 @@ Makefile
 *.so
 *.dylib
 *.dll
-simple_mcl
