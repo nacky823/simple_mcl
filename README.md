@@ -1,7 +1,13 @@
 # simple_mcl
 
 
-## Build
+## Build (Makefile)
+
+```bash
+make
+```
+
+## Build (CMake)
 
 ```bash
 mkdir -p build
@@ -13,5 +19,5 @@ make
 ## Run
 
 ```bash
-./simple_mcl
+./build/simple_mcl
 ```
