@@ -78,4 +78,25 @@ inline void apply1DMotion(
     }
 }
 
+inline double gaussianPdf(double x, double mean, double stddev)
+{
+    const double kPi = 3.141592653589793;
+    const double var = stddev * stddev;
+    if (var <= 0.0) return 0.0;
+
+    const double diff = x - mean;
+    const double norm = 1.0 / std::sqrt(2.0 * kPi * var);
+    return norm * std::exp(-(diff * diff) / (2.0 * var));
+}
+
+inline void updateWeights1D(
+    std::vector<Particle> *particles, double measurement, double sensor_std)
+{
+    if (!particles) return;
+    for (auto &p : *particles) {
+        double pz = gaussianPdf(measurement, p.pose.x, sensor_std);
+        p.weight *= pz;
+    }
+}
+
 }  // namespace simple_mcl
