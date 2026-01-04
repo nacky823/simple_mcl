@@ -78,6 +78,22 @@ inline void apply1DMotion(
     }
 }
 
+inline void applyOdometryMotion(
+    std::vector<Particle> *particles, const OdomDelta &u,
+    double rot1_std, double trans_std, double rot2_std, Random &rng)
+{
+    if (!particles) return;
+    for (auto &p : *particles) {
+        double rot1 = u.rot1 + rng.normal(0.0, rot1_std);
+        double trans = u.trans + rng.normal(0.0, trans_std);
+        double rot2 = u.rot2 + rng.normal(0.0, rot2_std);
+
+        p.pose.x += trans * std::cos(p.pose.theta + rot1);
+        p.pose.y += trans * std::sin(p.pose.theta + rot1);
+        p.pose.theta = normalizeAngle(p.pose.theta + rot1 + rot2);
+    }
+}
+
 inline double gaussianPdf(double x, double mean, double stddev)
 {
     const double kPi = 3.141592653589793;
