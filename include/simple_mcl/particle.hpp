@@ -68,4 +68,14 @@ inline Pose estimatePoseWeightedMean(const std::vector<Particle> &particles)
     return estimate;
 }
 
+inline void apply1DMotion(
+    std::vector<Particle> *particles, double delta, double noise_std, Random &rng)
+{
+    if (!particles) return;
+    for (auto &p : *particles) {
+        double noisy = delta + rng.normal(0.0, noise_std);
+        p.pose.x += noisy;
+    }
+}
+
 }  // namespace simple_mcl
