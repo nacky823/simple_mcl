@@ -99,4 +99,33 @@ inline void updateWeights1D(
     }
 }
 
+inline std::vector<Particle> resampleMultinomial(
+    const std::vector<Particle> &particles, Random &rng)
+{
+    std::vector<Particle> out;
+    if (particles.empty()) return out;
+
+    out.reserve(particles.size());
+    std::vector<double> cdf;
+    cdf.reserve(particles.size());
+    double accum = 0.0;
+    for (const auto &p : particles) {
+        accum += p.weight;
+        cdf.push_back(accum);
+    }
+    if (accum <= 0.0) return out;
+
+    for (std::size_t i = 0; i < particles.size(); ++i) {
+        double r = rng.uniform(0.0, accum);
+        std::size_t idx = 0;
+        while (idx < cdf.size() && r > cdf[idx]) {
+            ++idx;
+        }
+        if (idx >= particles.size()) idx = particles.size() - 1;
+        out.push_back(particles[idx]);
+        out.back().weight = 1.0;
+    }
+    return out;
+}
+
 }  // namespace simple_mcl
