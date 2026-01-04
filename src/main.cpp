@@ -53,7 +53,10 @@ int main() {
         return 1;
     }
     log << "step,est_x,est_y,est_theta\n";
+    const double dx = 0.5;
+    const double motion_noise = 0.1;
     for (int step = 0; step < 5; ++step) {
+        simple_mcl::apply1DMotion(&particles, dx, motion_noise, rng);
         simple_mcl::Pose est = simple_mcl::estimatePoseWeightedMean(particles);
         log << step << "," << est.x << "," << est.y << "," << est.theta << "\n";
     }
