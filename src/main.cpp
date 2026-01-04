@@ -63,6 +63,7 @@ int main() {
         double measurement = truth_x + rng.normal(0.0, sensor_std);
         simple_mcl::updateWeights1D(&particles, measurement, sensor_std);
         simple_mcl::normalizeWeights(&particles);
+        particles = simple_mcl::resampleMultinomial(particles, rng);
         simple_mcl::Pose est = simple_mcl::estimatePoseWeightedMean(particles);
         log << step << "," << truth_x << "," << measurement << ","
             << est.x << "," << est.y << "," << est.theta << "\n";
