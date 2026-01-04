@@ -18,6 +18,12 @@ public:
         return dist(rng_);
     }
 
+    std::size_t uniformIndex(std::size_t max_exclusive) {
+        if (max_exclusive == 0) return 0;
+        std::uniform_int_distribution<std::size_t> dist(0, max_exclusive - 1);
+        return dist(rng_);
+    }
+
 private:
     std::mt19937 rng_;
 };
