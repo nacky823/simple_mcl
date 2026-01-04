@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 
 #include "simple_mcl/particle.hpp"
@@ -45,6 +46,18 @@ int main() {
 
     simple_mcl::Pose estimate = simple_mcl::estimatePoseWeightedMean(particles);
     std::cout << "estimate=(" << estimate.x << ", " << estimate.y << ", " << estimate.theta << ")\n";
+
+    std::ofstream log("simple_mcl_log.csv");
+    if (!log) {
+        std::cerr << "failed to open simple_mcl_log.csv\n";
+        return 1;
+    }
+    log << "step,est_x,est_y,est_theta\n";
+    for (int step = 0; step < 5; ++step) {
+        simple_mcl::Pose est = simple_mcl::estimatePoseWeightedMean(particles);
+        log << step << "," << est.x << "," << est.y << "," << est.theta << "\n";
+    }
+    std::cout << "wrote simple_mcl_log.csv\n";
 
     return 0;
 }
