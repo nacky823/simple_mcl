@@ -52,21 +52,25 @@ int main() {
         std::cerr << "failed to open simple_mcl_log.csv\n";
         return 1;
     }
-    log << "step,truth_x,measurement,est_x,est_y,est_theta\n";
-    double truth_x = 2.0;
-    const double dx = 0.5;
-    const double motion_noise = 0.1;
+    log << "step,truth_x,truth_y,truth_theta,measurement,est_x,est_y,est_theta\n";
+    simple_mcl::Pose truth{2.0, 1.0, 0.0};
+    simple_mcl::OdomDelta u{0.1, 0.5, 0.05};
+    const double rot1_std = 0.05;
+    const double trans_std = 0.1;
+    const double rot2_std = 0.05;
     const double sensor_std = 0.2;
     for (int step = 0; step < 5; ++step) {
-        simple_mcl::apply1DMotion(&particles, dx, motion_noise, rng);
-        truth_x += dx;
-        double measurement = truth_x + rng.normal(0.0, sensor_std);
+        simple_mcl::applyOdometryMotion(&particles, u, rot1_std, trans_std, rot2_std, rng);
+        truth.x += u.trans * std::cos(truth.theta + u.rot1);
+        truth.y += u.trans * std::sin(truth.theta + u.rot1);
+        truth.theta = simple_mcl::normalizeAngle(truth.theta + u.rot1 + u.rot2);
+        double measurement = truth.x + rng.normal(0.0, sensor_std);
         simple_mcl::updateWeights1D(&particles, measurement, sensor_std);
         simple_mcl::normalizeWeights(&particles);
         particles = simple_mcl::resampleMultinomial(particles, rng);
         simple_mcl::Pose est = simple_mcl::estimatePoseWeightedMean(particles);
-        log << step << "," << truth_x << "," << measurement << ","
-            << est.x << "," << est.y << "," << est.theta << "\n";
+        log << step << "," << truth.x << "," << truth.y << "," << truth.theta << ","
+            << measurement << "," << est.x << "," << est.y << "," << est.theta << "\n";
     }
     std::cout << "wrote simple_mcl_log.csv\n";
 
