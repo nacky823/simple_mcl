@@ -13,3 +13,4 @@ Makefile
 *.so
 *.dylib
 *.dll
+*.csv
