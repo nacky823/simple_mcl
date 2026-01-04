@@ -52,13 +52,20 @@ int main() {
         std::cerr << "failed to open simple_mcl_log.csv\n";
         return 1;
     }
-    log << "step,est_x,est_y,est_theta\n";
+    log << "step,truth_x,measurement,est_x,est_y,est_theta\n";
+    double truth_x = 2.0;
     const double dx = 0.5;
     const double motion_noise = 0.1;
+    const double sensor_std = 0.2;
     for (int step = 0; step < 5; ++step) {
         simple_mcl::apply1DMotion(&particles, dx, motion_noise, rng);
+        truth_x += dx;
+        double measurement = truth_x + rng.normal(0.0, sensor_std);
+        simple_mcl::updateWeights1D(&particles, measurement, sensor_std);
+        simple_mcl::normalizeWeights(&particles);
         simple_mcl::Pose est = simple_mcl::estimatePoseWeightedMean(particles);
-        log << step << "," << est.x << "," << est.y << "," << est.theta << "\n";
+        log << step << "," << truth_x << "," << measurement << ","
+            << est.x << "," << est.y << "," << est.theta << "\n";
     }
     std::cout << "wrote simple_mcl_log.csv\n";
 
