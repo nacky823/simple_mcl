@@ -14,6 +14,11 @@ struct OdomDelta {
     double rot2{0.0};
 };
 
+struct Landmark {
+    double x{0.0};
+    double y{0.0};
+};
+
 inline double normalizeAngle(double theta)
 {
     const double kPi = 3.141592653589793;
