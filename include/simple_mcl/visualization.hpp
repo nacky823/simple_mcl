@@ -68,6 +68,15 @@ public:
             int hy = static_cast<int>(tv - 2 * std::sin(truth.theta));
             cv::arrowedLine(frame, cv::Point(tu, tv), cv::Point(hx, hy), cv::Scalar(0, 200, 0), 1);
         }
+        int eu = 0;
+        int ev = 0;
+        if (worldToImage(estimate.x, estimate.y, &eu, &ev)) {
+            cv::circle(frame, cv::Point(eu, ev), 0, cv::Scalar(0, 0, 255), -1);
+            int hx = static_cast<int>(eu + 2 * std::cos(estimate.theta));
+            int hy = static_cast<int>(ev - 2 * std::sin(estimate.theta));
+            cv::arrowedLine(frame, cv::Point(eu, ev), cv::Point(hx, hy), cv::Scalar(0, 0, 200), 1);
+        }
+
 
         return frame;
     }
