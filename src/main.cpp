@@ -27,7 +27,7 @@ int main() {
     simple_mcl::Pose min_pose{0.0, 0.0, -kPi};
     simple_mcl::Pose max_pose{10.0, 10.0, kPi};
     std::vector<simple_mcl::Particle> particles =
-        simple_mcl::initializeUniformParticles(5, min_pose, max_pose, rng);
+        simple_mcl::initializeUniformParticles(300, min_pose, max_pose, rng);
 
     for (auto &p : particles) {
         p.weight = rng.uniform(0.0, 1.0);
