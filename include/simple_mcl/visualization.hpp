@@ -77,6 +77,16 @@ public:
             cv::arrowedLine(frame, cv::Point(eu, ev), cv::Point(hx, hy), cv::Scalar(0, 0, 200), 1);
         }
 
+        const int width = frame.cols;
+        const int height = frame.rows;
+        double scale_x = static_cast<double>(max_width_) / static_cast<double>(width);
+        double scale_y = static_cast<double>(max_height_) / static_cast<double>(height);
+        double scale = std::min(scale_x, scale_y);
+        if (scale < 1.0) {
+            cv::Mat scaled;
+            cv::resize(frame, scaled, cv::Size(), scale, scale, cv::INTER_AREA);
+            return scaled;
+        }
 
         return frame;
     }
