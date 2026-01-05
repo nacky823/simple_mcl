@@ -115,6 +115,20 @@ inline void updateWeights1D(
     }
 }
 
+inline void updateWeightsLandmark(
+    std::vector<Particle> *particles, const Landmark &landmark,
+    double measurement, double sensor_std)
+{
+    if (!particles) return;
+    for (auto &p : *particles) {
+        double dx = p.pose.x - landmark.x;
+        double dy = p.pose.y - landmark.y;
+        double expected = std::sqrt(dx * dx + dy * dy);
+        double pz = gaussianPdf(measurement, expected, sensor_std);
+        p.weight *= pz;
+    }
+}
+
 inline std::vector<Particle> resampleMultinomial(
     const std::vector<Particle> &particles, Random &rng)
 {
