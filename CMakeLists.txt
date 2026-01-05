@@ -4,5 +4,8 @@ project(simple_mcl LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(OpenCV REQUIRED)
+
 add_executable(simple_mcl src/main.cpp)
-target_include_directories(simple_mcl PRIVATE include)
+target_include_directories(simple_mcl PRIVATE include ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(simple_mcl ${OpenCV_LIBS})
