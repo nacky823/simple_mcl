@@ -115,17 +115,23 @@ inline void updateWeights1D(
     }
 }
 
-inline void updateWeightsLandmark(
-    std::vector<Particle> *particles, const Landmark &landmark,
-    double measurement, double sensor_std)
+inline void updateWeightsLandmarks(
+    std::vector<Particle> *particles, const std::vector<Landmark> &landmarks,
+    const std::vector<double> &measurements, double sensor_std)
 {
     if (!particles) return;
+    if (landmarks.empty()) return;
+    if (landmarks.size() != measurements.size()) return;
+
     for (auto &p : *particles) {
-        double dx = p.pose.x - landmark.x;
-        double dy = p.pose.y - landmark.y;
-        double expected = std::sqrt(dx * dx + dy * dy);
-        double pz = gaussianPdf(measurement, expected, sensor_std);
-        p.weight *= pz;
+        for (std::size_t i = 0; i < landmarks.size(); ++i) {
+            const auto &lm = landmarks[i];
+            double dx = p.pose.x - lm.x;
+            double dy = p.pose.y - lm.y;
+            double expected = std::sqrt(dx * dx + dy * dy);
+            double pz = gaussianPdf(measurements[i], expected, sensor_std);
+            p.weight *= pz;
+        }
     }
 }
 
