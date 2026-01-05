@@ -1,9 +1,14 @@
+#include <cmath>
 #include <fstream>
 #include <iostream>
+#include <string>
+
+#include <opencv2/highgui.hpp>
 
 #include "simple_mcl/particle.hpp"
 #include "simple_mcl/random.hpp"
 #include "simple_mcl/types.hpp"
+#include "simple_mcl/visualization.hpp"
 
 int main() {
     simple_mcl::Pose pose{1.0, 2.0, 0.1};
@@ -24,8 +29,10 @@ int main() {
     std::cout << "normal(0,1) sample mean=" << mean << " var=" << var << "\n";
 
     const double kPi = 3.141592653589793;
-    simple_mcl::Pose min_pose{0.0, 0.0, -kPi};
-    simple_mcl::Pose max_pose{10.0, 10.0, kPi};
+    const double world_min = 0.0;
+    const double world_max = 30.0;
+    simple_mcl::Pose min_pose{world_min, world_min, -kPi};
+    simple_mcl::Pose max_pose{world_max, world_max, kPi};
     std::vector<simple_mcl::Particle> particles =
         simple_mcl::initializeUniformParticles(300, min_pose, max_pose, rng);
 
@@ -47,28 +54,40 @@ int main() {
     simple_mcl::Pose estimate = simple_mcl::estimatePoseWeightedMean(particles);
     std::cout << "estimate=(" << estimate.x << ", " << estimate.y << ", " << estimate.theta << ")\n";
 
+    simple_mcl::Pose truth{
+        world_min + (world_max - world_min) * 0.5,
+        world_min + (world_max - world_min) * 0.25,
+        0.0,
+    };
     std::ofstream log("simple_mcl_log.csv");
     if (!log) {
         std::cerr << "failed to open simple_mcl_log.csv\n";
         return 1;
     }
+    simple_mcl::Visualizer viz(world_min, world_max, world_min, world_max, 10, 800, 800);
+
     log << "step,truth_x,truth_y,truth_theta,meas_0,meas_1,meas_2,est_x,est_y,est_theta\n";
-    simple_mcl::Pose truth{2.0, 1.0, 0.0};
     simple_mcl::OdomDelta u{0.1, 0.5, 0.05};
     std::vector<simple_mcl::Landmark> landmarks{
-        {8.0, 2.0},
-        {2.0, 8.0},
-        {9.0, 9.0},
+        {5.0, 5.0},
+        {25.0, 8.0},
+        {20.0, 25.0},
     };
     const double rot1_std = 0.05;
     const double trans_std = 0.1;
     const double rot2_std = 0.05;
-    const double sensor_std = 0.2;
-    for (int step = 0; step < 5; ++step) {
+    const double sensor_std = 0.4;
+    const int steps = 50;
+    for (int step = 0; step < steps; ++step) {
         simple_mcl::applyOdometryMotion(&particles, u, rot1_std, trans_std, rot2_std, rng);
-        truth.x += u.trans * std::cos(truth.theta + u.rot1);
-        truth.y += u.trans * std::sin(truth.theta + u.rot1);
-        truth.theta = simple_mcl::normalizeAngle(truth.theta + u.rot1 + u.rot2);
+        simple_mcl::Pose next_truth = truth;
+        next_truth.x += u.trans * std::cos(truth.theta + u.rot1);
+        next_truth.y += u.trans * std::sin(truth.theta + u.rot1);
+        next_truth.theta = simple_mcl::normalizeAngle(truth.theta + u.rot1 + u.rot2);
+        if (next_truth.x >= world_min && next_truth.x <= world_max &&
+            next_truth.y >= world_min && next_truth.y <= world_max) {
+            truth = next_truth;
+        }
         std::vector<double> measurements;
         measurements.reserve(landmarks.size());
         for (const auto &lm : landmarks) {
@@ -86,6 +105,11 @@ int main() {
             log << "," << m;
         }
         log << "," << est.x << "," << est.y << "," << est.theta << "\n";
+
+        cv::Mat frame = viz.drawFrame(particles, truth, est, landmarks);
+        cv::imshow("simple_mcl", frame);
+        int key = cv::waitKey(120);
+        if (key == 27) break;
     }
     std::cout << "wrote simple_mcl_log.csv\n";
 
