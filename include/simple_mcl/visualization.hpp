@@ -12,8 +12,7 @@ namespace simple_mcl {
 class Visualizer
 {
 public:
-    Visualizer(
-        double min_x, double max_x, double min_y, double max_y,
+    Visualizer(double min_x, double max_x, double min_y, double max_y,
         int render_scale = 10, int max_width = 800, int max_height = 800)
         : min_x_(min_x),
           max_x_(max_x),
@@ -27,6 +26,19 @@ public:
         int height = static_cast<int>(std::ceil((max_y_ - min_y_) * render_scale_));
         base_image_ = cv::Mat(height, width, CV_8UC3, cv::Scalar(255, 255, 255));
     }
+
+    bool worldToImage(double wx, double wy, int *u, int *v) const
+    {
+        if (wx < min_x_ || wx > max_x_ || wy < min_y_ || wy > max_y_) return false;
+
+        int col = static_cast<int>((wx - min_x_) * render_scale_);
+        int row = static_cast<int>((max_y_ - wy) * render_scale_);
+        if (u) *u = col;
+        if (v) *v = row;
+
+        return true;
+    }
+
 
 private:
 
