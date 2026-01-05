@@ -60,6 +60,15 @@ public:
             }
         }
 
+        int tu = 0;
+        int tv = 0;
+        if (worldToImage(truth.x, truth.y, &tu, &tv)) {
+            cv::circle(frame, cv::Point(tu, tv), 0, cv::Scalar(0, 255, 0), -1);
+            int hx = static_cast<int>(tu + 2 * std::cos(truth.theta));
+            int hy = static_cast<int>(tv - 2 * std::sin(truth.theta));
+            cv::arrowedLine(frame, cv::Point(tu, tv), cv::Point(hx, hy), cv::Scalar(0, 200, 0), 1);
+        }
+
         return frame;
     }
 
