@@ -45,6 +45,21 @@ public:
     {
         cv::Mat frame = base_image_.clone();
 
+        for (const auto &lm : landmarks) {
+            int u = 0;
+            int v = 0;
+            if (worldToImage(lm.x, lm.y, &u, &v)) {
+                cv::circle(frame, cv::Point(u, v), 2, cv::Scalar(0, 0, 0), -1);
+            }
+        }
+        for (const auto &p : particles) {
+            int u = 0;
+            int v = 0;
+            if (worldToImage(p.pose.x, p.pose.y, &u, &v)) {
+                cv::circle(frame, cv::Point(u, v), 0, cv::Scalar(255, 0, 0), -1);
+            }
+        }
+
         return frame;
     }
 
