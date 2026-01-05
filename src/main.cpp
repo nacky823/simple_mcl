@@ -52,10 +52,14 @@ int main() {
         std::cerr << "failed to open simple_mcl_log.csv\n";
         return 1;
     }
-    log << "step,truth_x,truth_y,truth_theta,measurement,est_x,est_y,est_theta\n";
+    log << "step,truth_x,truth_y,truth_theta,meas_0,meas_1,meas_2,est_x,est_y,est_theta\n";
     simple_mcl::Pose truth{2.0, 1.0, 0.0};
     simple_mcl::OdomDelta u{0.1, 0.5, 0.05};
-    simple_mcl::Landmark landmark{8.0, 2.0};
+    std::vector<simple_mcl::Landmark> landmarks{
+        {8.0, 2.0},
+        {2.0, 8.0},
+        {9.0, 9.0},
+    };
     const double rot1_std = 0.05;
     const double trans_std = 0.1;
     const double rot2_std = 0.05;
@@ -65,16 +69,23 @@ int main() {
         truth.x += u.trans * std::cos(truth.theta + u.rot1);
         truth.y += u.trans * std::sin(truth.theta + u.rot1);
         truth.theta = simple_mcl::normalizeAngle(truth.theta + u.rot1 + u.rot2);
-        double dx = truth.x - landmark.x;
-        double dy = truth.y - landmark.y;
-        double range = std::sqrt(dx * dx + dy * dy);
-        double measurement = range + rng.normal(0.0, sensor_std);
-        simple_mcl::updateWeightsLandmark(&particles, landmark, measurement, sensor_std);
+        std::vector<double> measurements;
+        measurements.reserve(landmarks.size());
+        for (const auto &lm : landmarks) {
+            double dx = truth.x - lm.x;
+            double dy = truth.y - lm.y;
+            double range = std::sqrt(dx * dx + dy * dy);
+            measurements.push_back(range + rng.normal(0.0, sensor_std));
+        }
+        simple_mcl::updateWeightsLandmarks(&particles, landmarks, measurements, sensor_std);
         simple_mcl::normalizeWeights(&particles);
         particles = simple_mcl::resampleMultinomial(particles, rng);
         simple_mcl::Pose est = simple_mcl::estimatePoseWeightedMean(particles);
-        log << step << "," << truth.x << "," << truth.y << "," << truth.theta << ","
-            << measurement << "," << est.x << "," << est.y << "," << est.theta << "\n";
+        log << step << "," << truth.x << "," << truth.y << "," << truth.theta;
+        for (double m : measurements) {
+            log << "," << m;
+        }
+        log << "," << est.x << "," << est.y << "," << est.theta << "\n";
     }
     std::cout << "wrote simple_mcl_log.csv\n";
 
