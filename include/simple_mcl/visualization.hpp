@@ -39,6 +39,14 @@ public:
         return true;
     }
 
+    cv::Mat drawFrame(const std::vector<Particle> &particles,
+        const Pose &truth, const Pose &estimate,
+        const std::vector<Landmark> &landmarks) const
+    {
+        cv::Mat frame = base_image_.clone();
+
+        return frame;
+    }
 
 private:
     cv::Mat base_image_;
