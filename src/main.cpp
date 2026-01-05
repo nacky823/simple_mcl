@@ -55,6 +55,7 @@ int main() {
     log << "step,truth_x,truth_y,truth_theta,measurement,est_x,est_y,est_theta\n";
     simple_mcl::Pose truth{2.0, 1.0, 0.0};
     simple_mcl::OdomDelta u{0.1, 0.5, 0.05};
+    simple_mcl::Landmark landmark{8.0, 2.0};
     const double rot1_std = 0.05;
     const double trans_std = 0.1;
     const double rot2_std = 0.05;
@@ -64,8 +65,11 @@ int main() {
         truth.x += u.trans * std::cos(truth.theta + u.rot1);
         truth.y += u.trans * std::sin(truth.theta + u.rot1);
         truth.theta = simple_mcl::normalizeAngle(truth.theta + u.rot1 + u.rot2);
-        double measurement = truth.x + rng.normal(0.0, sensor_std);
-        simple_mcl::updateWeights1D(&particles, measurement, sensor_std);
+        double dx = truth.x - landmark.x;
+        double dy = truth.y - landmark.y;
+        double range = std::sqrt(dx * dx + dy * dy);
+        double measurement = range + rng.normal(0.0, sensor_std);
+        simple_mcl::updateWeightsLandmark(&particles, landmark, measurement, sensor_std);
         simple_mcl::normalizeWeights(&particles);
         particles = simple_mcl::resampleMultinomial(particles, rng);
         simple_mcl::Pose est = simple_mcl::estimatePoseWeightedMean(particles);
