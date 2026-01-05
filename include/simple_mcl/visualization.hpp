@@ -13,7 +13,7 @@ class Visualizer
 {
 public:
     Visualizer(double min_x, double max_x, double min_y, double max_y,
-        int render_scale = 10, int max_width = 800, int max_height = 800)
+               int render_scale = 10, int max_width = 800, int max_height = 800)
         : min_x_(min_x),
           max_x_(max_x),
           min_y_(min_y),
@@ -41,7 +41,14 @@ public:
 
 
 private:
-
+    cv::Mat base_image_;
+    double min_x_{0.0};
+    double max_x_{0.0};
+    double min_y_{0.0};
+    double max_y_{0.0};
+    int render_scale_{1};
+    int max_width_{800};
+    int max_height_{800};
 };
 
 }  // namespace simple_mcl
