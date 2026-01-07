@@ -30,7 +30,9 @@ int main() {
 
     const double kPi = 3.141592653589793;
     const double world_min = 0.0;
-    const double world_max = 30.0;
+    const double world_max = 15.0;
+    const double display_min = 0.0;
+    const double display_max = 15.0;
     simple_mcl::Pose min_pose{world_min, world_min, -kPi};
     simple_mcl::Pose max_pose{world_max, world_max, kPi};
     std::vector<simple_mcl::Particle> particles =
@@ -54,30 +56,27 @@ int main() {
     simple_mcl::Pose estimate = simple_mcl::estimatePoseWeightedMean(particles);
     std::cout << "estimate=(" << estimate.x << ", " << estimate.y << ", " << estimate.theta << ")\n";
 
-    simple_mcl::Pose truth{
-        world_min + (world_max - world_min) * 0.5,
-        world_min + (world_max - world_min) * 0.25,
-        0.0,
-    };
+    simple_mcl::Pose truth{7.5, 4.0, 0.0};
     std::ofstream log("simple_mcl_log.csv");
     if (!log) {
         std::cerr << "failed to open simple_mcl_log.csv\n";
         return 1;
     }
-    simple_mcl::Visualizer viz(world_min, world_max, world_min, world_max, 10, 800, 800);
+    simple_mcl::Visualizer viz(display_min, display_max, display_min, display_max, 30, 600, 600);
 
     log << "step,truth_x,truth_y,truth_theta,meas_0,meas_1,meas_2,est_x,est_y,est_theta\n";
     simple_mcl::OdomDelta u{0.1, 0.5, 0.05};
     std::vector<simple_mcl::Landmark> landmarks{
-        {5.0, 5.0},
-        {25.0, 8.0},
-        {20.0, 25.0},
+        {2.0, 4.0},
+        {13.0, 4.0},
+        {7.5, 13.0},
     };
     const double rot1_std = 0.05;
     const double trans_std = 0.1;
     const double rot2_std = 0.05;
     const double sensor_std = 0.4;
-    const int steps = 50;
+    const int steps = 200;
+    const double dt = 0.1;
     for (int step = 0; step < steps; ++step) {
         simple_mcl::applyOdometryMotion(&particles, u, rot1_std, trans_std, rot2_std, rng);
         simple_mcl::Pose next_truth = truth;
@@ -106,9 +105,16 @@ int main() {
         }
         log << "," << est.x << "," << est.y << "," << est.theta << "\n";
 
-        cv::Mat frame = viz.drawFrame(particles, truth, est, landmarks);
+        double time_sec = dt * static_cast<double>(step);
+        cv::Mat frame = viz.drawFrame(particles, truth, est, landmarks, time_sec);
+        static bool window_ready = false;
+        if (!window_ready) {
+            cv::namedWindow("simple_mcl", cv::WINDOW_NORMAL);
+            cv::resizeWindow("simple_mcl", 800, 800);
+            window_ready = true;
+        }
         cv::imshow("simple_mcl", frame);
-        int key = cv::waitKey(120);
+        int key = cv::waitKey(240);
         if (key == 27) break;
     }
     std::cout << "wrote simple_mcl_log.csv\n";
