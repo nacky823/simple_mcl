@@ -121,8 +121,7 @@ $$
 $$
 
 $$
-\hat{\theta}_t
-=
+\hat{\theta}_t =
 \operatorname{atan2}\!\bigl(
 \sum_{i=1}^{N} w_t^{(i)}\sin\theta_t^{(i)},\;
 \sum_{i=1}^{N} w_t^{(i)}\cos\theta_t^{(i)}
