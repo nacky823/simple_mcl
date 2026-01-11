@@ -54,10 +54,14 @@ $$
 o_t = \{ r_{t,k} \}_{k=1}^{K}
 $$
 
-とし，次の事後分布（belief）をパーティクルで近似する．
+とし，次の確率分布をパーティクルで近似する．
 
 $$
-Bel(x_t)\;\approx\;\left\{ \left\langle x_t^{(i)},\; w_t^{(i)} \right\rangle \right\}_{i=1}^{N}
+\mathrm{Bel}(x_t)
+\approx
+\left\{
+\langle x_t^{(i)},\, w_t^{(i)} \rangle
+\right\}_{i=1}^{N}
 $$
 
 ランドマーク $\ell_k = (\ell_{k,x},\ell_{k,y})$ が既知のとき，姿勢 $x_t$ からの距離は
@@ -121,9 +125,12 @@ $$
 $$
 
 $$
-\hat\theta_t
+\hat{\theta}_t
 =
-\mathrm{atan2}\!\left(\sum_i w_t^{(i)}\sin\theta_t^{(i)},\ \sum_i w_t^{(i)}\cos\theta_t^{(i)}\right)
+\operatorname{atan2}\!\left(
+\sum_{i=1}^{N} w_t^{(i)} \sin\!\bigl(\theta_t^{(i)}\bigr),\;
+\sum_{i=1}^{N} w_t^{(i)} \cos\!\bigl(\theta_t^{(i)}\bigr)
+\right)
 $$
 
 
