@@ -64,7 +64,6 @@ int main() {
     }
     simple_mcl::Visualizer viz(display_min, display_max, display_min, display_max, 30, 600, 600);
 
-    log << "step,truth_x,truth_y,truth_theta,meas_0,meas_1,meas_2,est_x,est_y,est_theta\n";
     simple_mcl::OdomDelta u{0.1, 0.5, 0.05};
     std::vector<simple_mcl::Landmark> landmarks{
         {2.0, 4.0},
