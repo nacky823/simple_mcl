@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 Yuki NAGAKI youjiyongmu4@gmail.com
+// SPDX-License-Identifier: BSD-3-Clause
+
 #include <cmath>
 #include <fstream>
 #include <iostream>
