@@ -122,8 +122,8 @@ $$
 
 $$
 \hat{\theta}_t =
-\mathrm{atan2}\!\left(
-\sum_{i=1}^{N} w_t^{(i)}\sin\theta_t^{(i)},\;
+\mathrm{atan2}\left(
+\sum_{i=1}^{N} w_t^{(i)}\sin\theta_t^{(i)},
 \sum_{i=1}^{N} w_t^{(i)}\cos\theta_t^{(i)}
 \right)
 $$
