@@ -45,7 +45,7 @@ $$
 制御入力を
 
 $$
-a_{t-1} = (\mathrm{rot1},\; \mathrm{trans},\; \mathrm{rot2})
+a_{t-1} = (\mathrm{rot1}, \mathrm{trans}, \mathrm{rot2})
 $$
 
 観測（ランドマークとの距離）を
@@ -57,11 +57,7 @@ $$
 とし，次の確率分布をパーティクルで近似する．
 
 $$
-\mathrm{Bel}(x_t)
-\approx
-\left\{
-\langle x_t^{(i)},\, w_t^{(i)} \rangle
-\right\}_{i=1}^{N}
+\mathrm{Bel}(x_t)\approx \{(x_t^{(i)},\, w_t^{(i)})\}_{i=1}^{N}
 $$
 
 ランドマーク $\ell_k = (\ell_{k,x},\ell_{k,y})$ が既知のとき，姿勢 $x_t$ からの距離は
@@ -128,11 +124,10 @@ $$
 \hat{\theta}_t
 =
 \operatorname{atan2}\!\left(
-\sum_{i=1}^{N} w_t^{(i)} \sin\!\bigl(\theta_t^{(i)}\bigr),\;
-\sum_{i=1}^{N} w_t^{(i)} \cos\!\bigl(\theta_t^{(i)}\bigr)
+\sum_{i=1}^{N} w_t^{(i)}\sin\theta_t^{(i)},\;
+\sum_{i=1}^{N} w_t^{(i)}\cos\theta_t^{(i)}
 \right)
 $$
-
 
 ## CSV log
 
